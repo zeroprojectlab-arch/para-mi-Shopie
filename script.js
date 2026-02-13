@@ -1,51 +1,84 @@
-// Configuración de vuestra fecha especial: 10 de Septiembre, 9:35 AM
+// 1. CONFIGURACIÓN DE FECHA (10 de Septiembre, 9:35 AM)
 const fechaInicio = new Date('2025-09-10T09:35:00');
 
 function actualizarContador() {
     const ahora = new Date();
     const diferencia = ahora - fechaInicio;
-
     const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
     const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
     const min = Math.floor((diferencia / 1000 / 60) % 60);
     const seg = Math.floor((diferencia / 1000) % 60);
-
-    document.getElementById('contador').innerHTML = 
-        `${dias} días, ${horas} horas, ${min} minutos y ${seg} segundos`;
+    document.getElementById('contador').innerHTML = `${dias}d ${horas}h ${min}m ${seg}s`;
 }
 setInterval(actualizarContador, 1000);
 
-// CONFIGURACIÓN DEL ÁRBOL PRO
+// 2. CONFIGURACIÓN DEL LIENZO (CANVAS)
 const canvas = document.getElementById('tree');
 const ctx = canvas.getContext('2d');
-canvas.width = 400;
+canvas.width = window.innerWidth;
 canvas.height = 400;
 
-function dibujarCorazon(x, y, tamaño, color) {
+let animacionIniciada = false;
+
+// Dibujar el corazón-semilla inicial
+function dibujarSemilla() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!animacionIniciada) {
+        ctx.fillStyle = "#ff4d94";
+        ctx.font = "30px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText("❤️", canvas.width / 2, 50);
+        ctx.font = "14px Arial";
+        ctx.fillText("Toca el corazón", canvas.width / 2, 80);
+    }
+}
+
+// Función para dibujar una rama que crece
+function dibujarRama(x, y, longitud, angulo, grosor) {
     ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.moveTo(x, y);
-    ctx.bezierCurveTo(x, y - tamaño/2, x - tamaño, y - tamaño/2, x - tamaño, y);
-    ctx.bezierCurveTo(x - tamaño, y + tamaño/1.5, x, y + tamaño, x, y + tamaño);
-    ctx.bezierCurveTo(x, y + tamaño, x + tamaño, y + tamaño/1.5, x + tamaño, y);
-    ctx.bezierCurveTo(x + tamaño, y - tamaño/2, x, y - tamaño/2, x, y);
-    ctx.fill();
+    ctx.save();
+    ctx.strokeStyle = "#4b0082";
+    ctx.lineWidth = grosor;
+    ctx.translate(x, y);
+    ctx.rotate(angulo * Math.PI / 180);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -longitud);
+    ctx.stroke();
+
+    if (longitud < 10) {
+        // Al final de la rama, dibujar un corazón (hoja)
+        ctx.fillStyle = ["#ff0055", "#ff4d94", "#7a00cc"][Math.floor(Math.random() * 3)];
+        ctx.fillText("❤️", 0, -longitud);
+        ctx.restore();
+        return;
+    }
+
+    // Recursividad para crear más ramas
+    setTimeout(() => {
+        dibujarRama(0, -longitud, longitud * 0.75, angulo - 20, grosor * 0.7);
+        dibujarRama(0, -longitud, longitud * 0.75, angulo + 20, grosor * 0.7);
+    }, 100);
+
+    ctx.restore();
 }
 
-// Dibujar tronco con curvas
-ctx.strokeStyle = '#4b0082';
-ctx.lineWidth = 8;
-ctx.beginPath();
-ctx.moveTo(200, 400);
-ctx.quadraticCurveTo(200, 300, 200, 200);
-ctx.stroke();
+// Al hacer clic: la semilla cae y nace el árbol
+canvas.addEventListener('click', () => {
+    if (animacionIniciada) return;
+    animacionIniciada = true;
+    
+    // Simular caída
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let ySemilla = 50;
+    const intervaloCae = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillText("❤️", canvas.width / 2, ySemilla);
+        ySemilla += 10;
+        if (ySemilla >= 380) {
+            clearInterval(intervaloCae);
+            dibujarRama(canvas.width / 2, 400, 80, 0, 10); // Empieza a crecer
+        }
+    }, 20);
+});
 
-// Llenar el árbol de corazones de Sophie (Rojos, Rosas y Morados)
-const colores = ['#ff0055', '#ff4d94', '#ffb3d9', '#7a00cc'];
-for (let i = 0; i < 50; i++) {
-    const x = 200 + (Math.random() - 0.5) * 180;
-    const y = 100 + (Math.random() * 150);
-    const tam = 5 + Math.random() * 10;
-    const col = colores[Math.floor(Math.random() * colores.length)];
-    dibujarCorazon(x, y, tam, col);
-}
+dibujarSemilla();
