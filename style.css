@@ -1,48 +1,46 @@
-/* Diseño para Sophie - Rosa, Rojo y Morado */
 body {
-    background-color: #1a0a1a; /* Fondo morado muy oscuro */
-    color: #ffb3d9; /* Letras rosa suave */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-align: center;
+    background-color: #1a0a1a;
+    color: #ffb3d9;
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
 }
 
 .container {
-    background: rgba(45, 10, 45, 0.6); /* Caja semi-transparente */
+    background: rgba(45, 10, 45, 0.7);
     padding: 30px;
-    border-radius: 30px;
-    border: 2px solid #7a00cc; /* Borde morado brillante */
+    border-radius: 20px;
+    text-align: center;
+    border: 2px solid #7a00cc;
     box-shadow: 0 0 20px #ff0055;
-    max-width: 90%;
+    width: 95%; /* Más ancho */
+    max-width: 500px; /* Tamaño máximo ideal para cel */
+    min-height: 600px; /* Aquí le damos la altura para que quepa el árbol */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-h1 {
-    font-size: 1.6rem;
-    color: #ff4d94; /* Rosa fuerte */
-    text-shadow: 2px 2px 4px #000;
-}
+h1 { color: #ff4d94; font-size: 1.6rem; margin-bottom: 10px; }
 
-#contador {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #ff0055; /* Rojo pasión */
-    margin-top: 15px;
-    padding: 10px;
-    border-top: 1px solid #ffb3d9;
-}
-
-.seguro {
-    font-style: italic;
-    color: #d1b3ff; /* Morado claro */
-    margin-bottom: 20px;
+.canvas-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1; /* Esto hace que el árbol ocupe todo el espacio central */
 }
 
 canvas {
     background: transparent;
-    border-radius: 20px;
+}
+
+#contador {
+    font-weight: bold;
+    color: #ff0055;
+    font-size: 1.2rem;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 179, 217, 0.3);
 }
