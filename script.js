@@ -39,9 +39,47 @@ canvas.addEventListener('click', () => {
             clearInterval(caida);
             estado = "CRECIENDO";
             // Aquí empezaremos a dibujar el árbol en el siguiente paso
-            alert("¡La semilla aterrizó! ¿Seguimos con el tronco?");
+     // 1. Nace el tronco puntiagudo
+            dibujarRama(200, 450, 80, 0, 12);
+            
+            // 2. Mover a la derecha y sacar el texto
+            setTimeout(() => {
+                canvas.style.transform = "translateX(120px)";
+                document.getElementById('texto-regalo').classList.remove('hidden');
+                actualizarContador();
+                setInterval(actualizarContador, 1000);
+            }, 3000);
         }
     }, 20);
 });
 
+// 3. FUNCIÓN DEL ÁRBOL PUNTIAGUDO
+function dibujarRama(x, y, len, angle, width) {
+    ctx.beginPath();
+    ctx.save();
+    ctx.strokeStyle = "#4b0082"; 
+    ctx.lineWidth = width;
+    ctx.translate(x, y);
+    ctx.rotate(angle * Math.PI / 180);
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, -len); // Esto crea la punta que querías
+    ctx.stroke();
+
+    if (len < 10) {
+        // Aquí nacen los corazones cuando la rama termina
+        dibujarCorazon(0, -len, 10, "#ff0055");
+        ctx.restore();
+        return;
+    }
+
+    // El árbol se abre en dos ramas puntiagudas
+    setTimeout(() => {
+        dibujarRama(0, -len, len * 0.75, angle - 25, width * 0.6);
+        dibujarRama(0, -len, len * 0.75, angle + 25, width * 0.6);
+    }, 100);
+
+    ctx.restore();
+}
+
+// 4. INICIAR LA PANTALLA
 mostrarPantallaInicial();
