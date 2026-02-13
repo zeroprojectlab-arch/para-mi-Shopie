@@ -1,4 +1,4 @@
-// Fecha: 10 de Septiembre a las 9:35 AM
+// Configuración de vuestra fecha especial: 10 de Septiembre, 9:35 AM
 const fechaInicio = new Date('2025-09-10T09:35:00');
 
 function actualizarContador() {
@@ -13,31 +13,39 @@ function actualizarContador() {
     document.getElementById('contador').innerHTML = 
         `${dias} días, ${horas} horas, ${min} minutos y ${seg} segundos`;
 }
-
-// Esto hace que el reloj corra cada segundo
 setInterval(actualizarContador, 1000);
 
-// Dibujamos el árbol de corazones (Simplificado para que funcione de una)
+// CONFIGURACIÓN DEL ÁRBOL PRO
 const canvas = document.getElementById('tree');
 const ctx = canvas.getContext('2d');
-canvas.width = 200;
-canvas.height = 200;
+canvas.width = 400;
+canvas.height = 400;
 
-// Tronco
-ctx.fillStyle = "#4b0082";
-ctx.fillRect(95, 120, 10, 60);
-
-// Corazones del árbol (Rosa y Rojo)
-function dibujarCorazon(x, y, color) {
-    ctx.fillStyle = color;
+function dibujarCorazon(x, y, tamaño, color) {
     ctx.beginPath();
-    ctx.arc(x - 5, y, 10, 0, Math.PI * 2);
-    ctx.arc(x + 5, y, 10, 0, Math.PI * 2);
-    ctx.arc(x, y + 5, 10, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.moveTo(x, y);
+    ctx.bezierCurveTo(x, y - tamaño/2, x - tamaño, y - tamaño/2, x - tamaño, y);
+    ctx.bezierCurveTo(x - tamaño, y + tamaño/1.5, x, y + tamaño, x, y + tamaño);
+    ctx.bezierCurveTo(x, y + tamaño, x + tamaño, y + tamaño/1.5, x + tamaño, y);
+    ctx.bezierCurveTo(x + tamaño, y - tamaño/2, x, y - tamaño/2, x, y);
     ctx.fill();
 }
 
-dibujarCorazon(100, 80, "#ff0055"); // Rojo
-dibujarCorazon(130, 100, "#ff4d94"); // Rosa
-dibujarCorazon(70, 100, "#ffb3d9"); // Rosa claro
-dibujarCorazon(100, 120, "#7a00cc"); // Morado
+// Dibujar tronco con curvas
+ctx.strokeStyle = '#4b0082';
+ctx.lineWidth = 8;
+ctx.beginPath();
+ctx.moveTo(200, 400);
+ctx.quadraticCurveTo(200, 300, 200, 200);
+ctx.stroke();
+
+// Llenar el árbol de corazones de Sophie (Rojos, Rosas y Morados)
+const colores = ['#ff0055', '#ff4d94', '#ffb3d9', '#7a00cc'];
+for (let i = 0; i < 50; i++) {
+    const x = 200 + (Math.random() - 0.5) * 180;
+    const y = 100 + (Math.random() * 150);
+    const tam = 5 + Math.random() * 10;
+    const col = colores[Math.floor(Math.random() * colores.length)];
+    dibujarCorazon(x, y, tam, col);
+}
