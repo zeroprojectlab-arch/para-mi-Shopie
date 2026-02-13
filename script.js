@@ -62,17 +62,17 @@ function dibujarRama(x, y, len, angle, width) {
     ctx.translate(x, y);
     ctx.rotate(angle * Math.PI / 180);
     ctx.moveTo(0, 0);
-    ctx.lineTo(0, -len); // Esto crea la punta que querías
+    ctx.lineTo(0, -len); // Esto hace la punta
     ctx.stroke();
 
+    // Si la rama es cortita, pone el corazón (hoja)
     if (len < 10) {
-        // Aquí nacen los corazones cuando la rama termina
         dibujarCorazon(0, -len, 10, "#ff0055");
         ctx.restore();
         return;
     }
 
-    // El árbol se abre en dos ramas puntiagudas
+    // Aquí está el truco: la rama crea otras dos ramas (recursividad)
     setTimeout(() => {
         dibujarRama(0, -len, len * 0.75, angle - 25, width * 0.6);
         dibujarRama(0, -len, len * 0.75, angle + 25, width * 0.6);
@@ -81,5 +81,5 @@ function dibujarRama(x, y, len, angle, width) {
     ctx.restore();
 }
 
-// 4. INICIAR LA PANTALLA
+// Esto debe quedar al final de TODO el archivo
 mostrarPantallaInicial();
