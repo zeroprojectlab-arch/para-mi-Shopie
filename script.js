@@ -39,47 +39,20 @@ canvas.addEventListener('click', () => {
             clearInterval(caida);
             estado = "CRECIENDO";
             // Aquí empezaremos a dibujar el árbol en el siguiente paso
-     // 1. Nace el tronco puntiagudo
-            dibujarRama(200, 450, 80, 0, 12);
-            
-            // 2. Mover a la derecha y sacar el texto
-            setTimeout(() => {
-                canvas.style.transform = "translateX(120px)";
-                document.getElementById('texto-regalo').classList.remove('hidden');
-                actualizarContador();
-                setInterval(actualizarContador, 1000);
-            }, 3000);
-        }
-    }, 20);
-});
-
-// 3. FUNCIÓN DEL ÁRBOL PUNTIAGUDO
-function dibujarRama(x, y, len, angle, width) {
-    ctx.beginPath();
+     function dibujarRama(x, y, len, angle, width) {
     ctx.save();
-    ctx.strokeStyle = "#4b0082"; 
-    ctx.lineWidth = width;
+    ctx.beginPath();
     ctx.translate(x, y);
     ctx.rotate(angle * Math.PI / 180);
-    ctx.moveTo(0, 0);
-    ctx.lineTo(0, -len); // Esto hace la punta
-    ctx.stroke();
 
-    // Si la rama es cortita, pone el corazón (hoja)
-    if (len < 10) {
-        dibujarCorazon(0, -len, 10, "#ff0055");
-        ctx.restore();
-        return;
-    }
-
-    // Aquí está el truco: la rama crea otras dos ramas (recursividad)
-    setTimeout(() => {
-        dibujarRama(0, -len, len * 0.75, angle - 25, width * 0.6);
-        dibujarRama(0, -len, len * 0.75, angle + 25, width * 0.6);
-    }, 100);
+    // Color café para el tronco
+    ctx.fillStyle = "#4b2c20"; 
+    
+    // Dibujamos un triángulo alargado para que sea puntiagudo
+    ctx.moveTo(-width / 2, 0);          // Esquina izquierda base
+    ctx.lineTo(width / 2, 0);           // Esquina derecha base
+    ctx.lineTo(0, -len);                // La punta arriba
+    ctx.fill();
 
     ctx.restore();
 }
-
-// Esto debe quedar al final de TODO el archivo
-mostrarPantallaInicial();
