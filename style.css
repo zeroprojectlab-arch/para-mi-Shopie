@@ -1,46 +1,38 @@
 body {
-    background-color: #1a0a1a;
-    color: #ffb3d9;
-    font-family: 'Segoe UI', sans-serif;
+    background-color: #0f0510;
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    color: #ffb3d9;
+    font-family: Arial, sans-serif;
 }
 
 .container {
-    background: rgba(45, 10, 45, 0.7);
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
-    border: 2px solid #7a00cc;
-    box-shadow: 0 0 20px #ff0055;
-    width: 95%; /* Más ancho */
-    max-width: 500px; /* Tamaño máximo ideal para cel */
-    min-height: 600px; /* Aquí le damos la altura para que quepa el árbol */
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-h1 { color: #ff4d94; font-size: 1.6rem; margin-bottom: 10px; }
-
-.canvas-wrap {
-    display: flex;
-    justify-content: center;
     align-items: center;
-    flex-grow: 1; /* Esto hace que el árbol ocupe todo el espacio central */
+    justify-content: center;
+    width: 90%;
+    max-width: 800px;
+    height: 500px;
+    position: relative;
 }
 
-canvas {
+#treeCanvas {
     background: transparent;
+    cursor: pointer;
+    transition: transform 1.5s ease; /* Para que el árbol se mueva suave */
 }
 
-#contador {
-    font-weight: bold;
-    color: #ff0055;
-    font-size: 1.2rem;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 179, 217, 0.3);
+.hidden { display: none; }
+
+#texto-regalo {
+    width: 50%;
+    text-align: left;
+    padding: 20px;
+    animation: fadeIn 2s forwards;
 }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
