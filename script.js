@@ -1,12 +1,10 @@
 const canvas = document.getElementById('treeCanvas');
 const ctx = canvas.getContext('2d');
+canvas.width = 400;
+canvas.height = 500;
 
-// Ajustamos el tamaño para que se vea bien en cualquier cel
-canvas.width = 300;
-canvas.height = 400;
-
-let ySemilla = 150; // Empezamos más arriba para que se vea el corazón
-let semillaCayendo = false;
+let ySemilla = 200;
+let estado = "ESPERANDO"; // ESPERANDO, CAYENDO, CRECIENDO
 
 function dibujarCorazon(x, y, size, color) {
     ctx.fillStyle = color;
@@ -19,40 +17,31 @@ function dibujarCorazon(x, y, size, color) {
     ctx.fill();
 }
 
-function inicial() {
+function mostrarPantallaInicial() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Corazón grande para que Sophie lo vea de una
-    dibujarCorazon(150, ySemilla, 30, "#ff4d94"); 
-    
-    // Texto llamativo
-    ctx.fillStyle = "#ffb3d9";
-    ctx.font = "bold 18px Arial";
+    dibujarCorazon(200, ySemilla, 40, "#ff4d94");
+    ctx.fillStyle = "white";
+    ctx.font = "20px Arial";
     ctx.textAlign = "center";
-    ctx.fillText("¡PRESÍONAME!", 150, ySemilla + 60);
+    ctx.fillText("¡PRESÍONAME!", 200, ySemilla + 80);
 }
 
 canvas.addEventListener('click', () => {
-    if (semillaCayendo) return;
-    semillaCayendo = true;
+    if (estado !== "ESPERANDO") return;
+    estado = "CAYENDO";
     
-    const animacion = setInterval(() => {
+    const caida = setInterval(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ySemilla += 7;
+        dibujarCorazon(200, ySemilla, 15, "#ff4d94");
         
-        ySemilla += 5; // Cae suavemente
-        
-        // Mientras cae, se va haciendo chiquito como una semilla real
-        let tamañoActual = 30 - (ySemilla - 150) * 0.1;
-        if (tamañoActual < 10) tamañoActual = 10;
-        
-        dibujarCorazon(150, ySemilla, tamañoActual, "#ff4d94");
-        
-        // El "suelo" ahora es a los 350 para que se vea en el cuadro
-        if (ySemilla >= 350) { 
-            clearInterval(animacion);
+        if (ySemilla >= 450) {
+            clearInterval(caida);
+            estado = "CRECIENDO";
+            // Aquí empezaremos a dibujar el árbol en el siguiente paso
+            alert("¡La semilla aterrizó! ¿Seguimos con el tronco?");
         }
     }, 20);
 });
 
-// Arrancamos la escena
-inicial();
+mostrarPantallaInicial();
