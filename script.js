@@ -35,24 +35,18 @@ canvas.addEventListener('click', () => {
         ySemilla += 7;
         dibujarCorazon(200, ySemilla, 15, "#ff4d94");
         
-        if (ySemilla >= 450) {
+      if (ySemilla >= 450) {
             clearInterval(caida);
             estado = "CRECIENDO";
-            // Aquí empezaremos a dibujar el árbol en el siguiente paso
-     function dibujarRama(x, y, len, angle, width) {
-    ctx.save();
-    ctx.beginPath();
-    ctx.translate(x, y);
-    ctx.rotate(angle * Math.PI / 180);
+            
+            // Esto dibuja el tronco puntiagudo
+            dibujarRama(200, 450, 120, 0, 20); 
 
-    // Color café para el tronco
-    ctx.fillStyle = "#4b2c20"; 
-    
-    // Dibujamos un triángulo alargado para que sea puntiagudo
-    ctx.moveTo(-width / 2, 0);          // Esquina izquierda base
-    ctx.lineTo(width / 2, 0);           // Esquina derecha base
-    ctx.lineTo(0, -len);                // La punta arriba
-    ctx.fill();
-
-    ctx.restore();
-}
+            // Esto mueve el árbol y saca el texto
+            setTimeout(() => {
+                canvas.style.transform = "translateX(120px)";
+                const texto = document.getElementById('texto-regalo');
+                if(texto) texto.classList.remove('hidden');
+                actualizarContador();
+            }, 2000);
+        }
