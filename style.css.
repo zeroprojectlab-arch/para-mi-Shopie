@@ -1,0 +1,48 @@
+/* Diseño para Sophie - Rosa, Rojo y Morado */
+body {
+    background-color: #1a0a1a; /* Fondo morado muy oscuro */
+    color: #ffb3d9; /* Letras rosa suave */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    background: rgba(45, 10, 45, 0.6); /* Caja semi-transparente */
+    padding: 30px;
+    border-radius: 30px;
+    border: 2px solid #7a00cc; /* Borde morado brillante */
+    box-shadow: 0 0 20px #ff0055;
+    max-width: 90%;
+}
+
+h1 {
+    font-size: 1.6rem;
+    color: #ff4d94; /* Rosa fuerte */
+    text-shadow: 2px 2px 4px #000;
+}
+
+#contador {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ff0055; /* Rojo pasión */
+    margin-top: 15px;
+    padding: 10px;
+    border-top: 1px solid #ffb3d9;
+}
+
+.seguro {
+    font-style: italic;
+    color: #d1b3ff; /* Morado claro */
+    margin-bottom: 20px;
+}
+
+canvas {
+    background: transparent;
+    border-radius: 20px;
+}
