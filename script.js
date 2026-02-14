@@ -222,3 +222,13 @@ function drawBgHearts() {
 
 // Arrancar la animación del fondo
 drawBgHearts();
+// ... (aquí termina lo que ya tenías de los corazones del fondo)
+
+// --- CÓDIGO FINAL PARA LA MÚSICA ---
+document.addEventListener('click', function() {
+    const audio = document.getElementById('miMusica');
+    if (audio) {
+        audio.play();
+        console.log("¡Música sonando para Sophie!");
+    }
+}, { once: true });
