@@ -10,10 +10,30 @@ let heartY = 250;
 let trunkHeight = 0;
 let branchesGrown = 0;
 let animationId = null;
+const branchData = []; // Memoria para que no se muevan como locos
 
 const GROUND_Y = 450;
 const HEART_START_Y = 200;
 const TARGET_HEART_Y = 420;
+
+// Generar la forma del corazón UNA SOLA VEZ al cargar el script
+function generarCorazonEstatico() {
+    for(let i=0; i<100; i++) { // 100 corazones para mucho volumen
+        let t = Math.random() * Math.PI * 2;
+        let r = Math.pow(Math.random(), 0.5); // Distribución para rellenar el centro
+        
+        // Ecuación matemática del corazón
+        let x = 16 * Math.pow(Math.sin(t), 3);
+        let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        
+        branchData.push({ 
+            dx: x * 6 * r, 
+            dy: y * 6 * r, 
+            size: 4 + Math.random() * 12 // Tamaños variados como pediste
+        });
+    }
+}
+generarCorazonEstatico();
 
 // Initial render
 drawHeart(300, HEART_START_Y, 1, true);
@@ -70,11 +90,10 @@ function animateTrunk() {
 function animateBranches() {
     const duration = 4000;
     const startTime = Date.now();
-    const totalBranches = 80; // Más elementos para el relleno
     function animate() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        branchesGrown = Math.floor(progress * totalBranches);
+        branchesGrown = Math.floor(progress * branchData.length);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawGround();
         drawTrunk(300, GROUND_Y, trunkHeight);
@@ -94,7 +113,7 @@ function drawTrunk(x, baseY, height) {
     ctx.save();
     ctx.translate(x, baseY);
     ctx.beginPath();
-    ctx.fillStyle = '#4b2c20';
+    ctx.fillStyle = '#4b2c20'; // Café madera fijo
     ctx.moveTo(-20, 0); 
     ctx.lineTo(0, -height); 
     ctx.lineTo(20, 0); 
@@ -103,28 +122,10 @@ function drawTrunk(x, baseY, height) {
 }
 
 function drawBranches(baseX, topY, count) {
-    const branchData = [];
-    // Generamos puntos para el borde y el relleno del corazón
-    for(let i=0; i<80; i++) {
-        let t = Math.random() * Math.PI * 2;
-        let r = Math.sqrt(Math.random()); // Factor para rellenar el interior
-        
-        // Ecuación del corazón
-        let x = 16 * Math.pow(Math.sin(t), 3);
-        let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        
-        // Multiplicamos por 'r' para que algunos queden adentro y otros afuera
-        branchData.push({ 
-            dx: x * 5 * r, 
-            dy: y * 5 * r, 
-            size: 5 + Math.random() * 10 // Tamaños variados como en la imagen
-        });
-    }
-
-    for (let i = 0; i < Math.min(count, branchData.length); i++) {
+    for (let i = 0; i < count; i++) {
         const b = branchData[i];
         ctx.beginPath();
-        ctx.strokeStyle = 'rgba(75, 44, 32, 0.4)'; // Ramas más suaves para que luzcan los corazones
+        ctx.strokeStyle = 'rgba(75, 44, 32, 0.2)'; // Ramas muy tenues para el efecto de volumen
         ctx.lineWidth = 1;
         ctx.moveTo(baseX, topY);
         ctx.lineTo(baseX + b.dx, topY + b.dy);
@@ -137,9 +138,9 @@ function drawRedHeart(x, y, size) {
     ctx.save();
     ctx.translate(x, y);
     ctx.beginPath();
-    ctx.fillStyle = '#ff1a1a';
+    ctx.fillStyle = '#ff1a1a'; // Rojo intenso como en tu imagen
     ctx.shadowColor = '#ff4444';
-    ctx.shadowBlur = 8;
+    ctx.shadowBlur = 10;
     ctx.moveTo(0, -size / 2);
     ctx.bezierCurveTo(size / 2, -size, size, -size / 3, 0, size / 2);
     ctx.bezierCurveTo(-size, -size / 3, -size / 2, -size, 0, -size / 2);
@@ -173,7 +174,7 @@ function drawGround() {
 }
 
 function showFinalMessage() {
-    canvas.style.transform = "translateX(120px)";
+    canvas.style.transform = "translateX(120px)"; // El canvas se mueve suavemente
     setTimeout(() => {
         if(textContainer) {
             textContainer.classList.remove('hidden');
@@ -184,7 +185,7 @@ function showFinalMessage() {
 }
 
 function startTimer() {
-    const startDate = new Date('2025-09-10T09:35:00');
+    const startDate = new Date('2025-09-10T09:35:00'); // Tu fecha especial
     function updateTimer() {
         const diff = new Date() - startDate;
         const d = Math.floor(diff / 86400000);
