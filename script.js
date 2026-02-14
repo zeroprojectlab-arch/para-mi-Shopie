@@ -172,3 +172,53 @@ function startTimer() {
         contador.textContent = `${d}d ${h}h ${m}m ${s}s`;
     }, 1000);
 }
+// --- CÓDIGO PARA LOS CORAZONES DEL FONDO ---
+const bgCanvas = document.getElementById('bgCanvas');
+const bgCtx = bgCanvas.getContext('2d');
+
+// Ajustar el tamaño del fondo a la pantalla
+function resizeBg() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeBg);
+resizeBg();
+
+let heartsBg = [];
+
+function drawBgHearts() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    
+    // Crear corazones poco a poco
+    if (heartsBg.length < 40) {
+        heartsBg.push({
+            x: Math.random() * bgCanvas.width,
+            y: bgCanvas.height + 20,
+            size: Math.random() * 10 + 5,
+            speed: Math.random() * 1 + 0.3,
+            opacity: Math.random() * 0.4 + 0.1
+        });
+    }
+
+    heartsBg.forEach((h, i) => {
+        h.y -= h.speed; // Los corazones suben
+        bgCtx.globalAlpha = h.opacity;
+        bgCtx.fillStyle = '#ff4d6d';
+        bgCtx.beginPath();
+        
+        // Dibujo del corazón pequeño
+        let s = h.size;
+        bgCtx.moveTo(h.x, h.y);
+        bgCtx.bezierCurveTo(h.x + s, h.y - s, h.x + s*2, h.y + s/3, h.x, h.y + s);
+        bgCtx.bezierCurveTo(h.x - s*2, h.y + s/3, h.x - s, h.y - s, h.x, h.y);
+        bgCtx.fill();
+
+        // Si se sale de la pantalla, lo quitamos para que no trabe la PC
+        if (h.y < -20) heartsBg.splice(i, 1);
+    });
+
+    requestAnimationFrame(drawBgHearts);
+}
+
+// Arrancar la animación del fondo
+drawBgHearts();
