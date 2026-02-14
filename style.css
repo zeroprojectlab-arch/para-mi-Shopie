@@ -76,3 +76,17 @@ body {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+#bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1; /* Esto hace que los corazones NO tapen el árbol */
+    background: linear-gradient(to bottom, #1a0a2e, #3a1a5e); /* Degradado oscuro pro */
+}
+
+.text-container {
+    position: relative;
+    z-index: 10; /* Asegura que las letras brillen por encima de todo */
+}
