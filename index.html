@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Para Sophie</title>
+    <title>Regalo para Sophie</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div id="texto-regalo" class="hidden">
-            <h1>Para Sophie</h1>
-            <p>Si pudiera elegir un lugar seguro, sería a tu lado.</p>
-            <div id="contador"></div>
+        <div class="text-container" id="texto-regalo">
+            <h1 class="title">Para Sophie</h1>
+            <p class="timer">Tiempo juntos: <span id="contador"></span></p>
         </div>
-        
-        <canvas id="treeCanvas"></canvas>
+        <canvas id="treeCanvas" width="600" height="500"></canvas>
     </div>
     <script src="script.js"></script>
 </body>
