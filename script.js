@@ -4,7 +4,6 @@ const ctx = canvas.getContext('2d');
 const textContainer = document.getElementById('texto-regalo');
 const contador = document.getElementById('contador');
 
-// State management
 let state = 'start'; 
 let heartY = 250;
 let trunkHeight = 0;
@@ -15,55 +14,40 @@ const GROUND_Y = 450;
 const HEART_START_Y = 200;
 const TARGET_HEART_Y = 420;
 
+// ESTRUCTURA POR CAPAS (Sin azar)
 function prepararArbol() {
-    // 1. EL BORDE (60 corazones para que la forma sea perfecta)
-    for(let i=0; i<60; i++) {
-        let t = (i / 59) * Math.PI * 2;
-        let x = 16 * Math.pow(Math.sin(t), 3);
-        let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        branchData.push({ dx: x * 6.5, dy: y * 6.5, size: 12, isBorder: true });
-    }
-    // 2. EL RELLENO (80 corazones esparcidos por TODO el interior)
-    for(let i=0; i<80; i++) {
-        let t = Math.random() * Math.PI * 2;
-        // Este factor 'r' hace que se llenen las "orejas" del corazón
-        let r = Math.pow(Math.random(), 0.5) * 0.9; 
-        let x = 16 * Math.pow(Math.sin(t), 3);
-        let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        branchData.push({ 
-            dx: x * 6.5 * r, 
-            dy: y * 6.5 * r, 
-            size: 6 + Math.random() * 10, 
-            isBorder: false 
-        });
-    }
+    // Definimos 4 capas de relleno, de afuera hacia adentro
+    const capas = [
+        { escala: 6.5, cantidad: 60, tamaño: 12 }, // Borde exterior
+        { escala: 5.0, cantidad: 45, tamaño: 10 }, // Capa media alta
+        { escala: 3.5, cantidad: 30, tamaño: 8 },  // Capa media baja
+        { escala: 1.5, cantidad: 15, tamaño: 6 }   // Centro (corazones pequeñitos)
+    ];
+
+    capas.forEach(capa => {
+        for(let i = 0; i < capa.cantidad; i++) {
+            let t = (i / (capa.cantidad - 1)) * Math.PI * 2;
+            // Ecuación matemática del corazón
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+            
+            branchData.push({ 
+                dx: x * capa.escala, 
+                dy: y * capa.escala, 
+                size: capa.tamaño 
+            });
+        }
+    });
 }
 prepararArbol();
 
-// ... (El resto de funciones animateFalling y animateTrunk se quedan igual que antes)
-
-function animateBranches() {
-    const duration = 4000;
-    const startTime = Date.now();
-    function animate() {
-        const elapsed = Date.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        branchesGrown = Math.floor(progress * branchData.length);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawGround();
-        drawTrunk(300, GROUND_Y, trunkHeight);
-        drawBranches(300, GROUND_Y - trunkHeight, branchesGrown);
-        if (progress < 1) requestAnimationFrame(animate);
-        else { state = 'complete'; showFinalMessage(); }
-    }
-    animate();
-}
+// ... (Las funciones animateFalling, animateTrunk y animateBranches se mantienen igual)
 
 function drawTrunk(x, baseY, height) {
     ctx.save();
     ctx.translate(x, baseY);
     ctx.beginPath();
-    ctx.fillStyle = '#4b2c20'; // Café madera
+    ctx.fillStyle = '#4b2c20'; // Café madera fijo
     ctx.moveTo(-20, 0); ctx.lineTo(0, -height); ctx.lineTo(20, 0);
     ctx.fill();
     ctx.restore();
@@ -73,8 +57,7 @@ function drawBranches(baseX, topY, count) {
     for (let i = 0; i < count; i++) {
         const b = branchData[i];
         ctx.beginPath();
-        // Ramas muy claritas para que lo que resalte sean los corazones
-        ctx.strokeStyle = 'rgba(75, 44, 32, 0.1)'; 
+        ctx.strokeStyle = 'rgba(75, 44, 32, 0.1)'; // Ramas muy suaves
         ctx.moveTo(baseX, topY);
         ctx.lineTo(baseX + b.dx, topY + b.dy);
         ctx.stroke();
@@ -86,7 +69,7 @@ function drawRedHeart(x, y, size) {
     ctx.save();
     ctx.translate(x, y);
     ctx.beginPath();
-    ctx.fillStyle = '#ff1a1a'; // Rojo brillante
+    ctx.fillStyle = '#ff1a1a'; // Rojo brillante como pediste
     ctx.shadowColor = '#ff4444';
     ctx.shadowBlur = 10;
     ctx.moveTo(0, -size / 2);
