@@ -90,3 +90,19 @@ body {
     position: relative;
     z-index: 10; /* Asegura que las letras brillen por encima de todo */
 }
+/* AJUSTE PARA CELULAR */
+canvas {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+.text-container {
+    width: 90% !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+}
+
+#treeCanvas {
+    width: 100% !important;
+    max-height: 70vh; /* Para que no ocupe toda la pantalla hacia abajo */
+}
