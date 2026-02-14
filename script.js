@@ -62,7 +62,7 @@ function animateFalling() {
 function animateTrunk() {
     const duration = 2000;
     const startTime = Date.now();
-    const maxTrunkHeight = 120;
+    const maxTrunkHeight = 180; // Taller trunk for more branches
 
     function animate() {
         const elapsed = Date.now() - startTime;
@@ -90,9 +90,9 @@ function animateTrunk() {
 }
 
 function animateBranches() {
-    const duration = 2500;
+    const duration = 4000; // Longer duration for more branches
     const startTime = Date.now();
-    const totalBranches = 5;
+    const totalBranches = 40; // Many more branches!
 
     function animate() {
         const elapsed = Date.now() - startTime;
@@ -201,9 +201,9 @@ function drawTrunk(x, baseY, height) {
     // Draw trunk (brown cone/triangle shape)
     ctx.beginPath();
     ctx.fillStyle = '#5d3a1a';
-    ctx.moveTo(-20, 0); // Wide at bottom
+    ctx.moveTo(-25, 0); // Wide at bottom
     ctx.lineTo(0, -height); // Pointed at top
-    ctx.lineTo(20, 0); // Wide at bottom
+    ctx.lineTo(25, 0); // Wide at bottom
     ctx.closePath();
     ctx.fill();
     
@@ -216,13 +216,56 @@ function drawTrunk(x, baseY, height) {
 }
 
 function drawBranches(baseX, topY, count) {
+    // Extended branch data with many more branches at different levels
     const branchData = [
-        { angle: -60, length: 60, heartY: -30 },
-        { angle: -40, length: 80, heartY: -40 },
-        { angle: -20, length: 70, heartY: -35 },
-        { angle: 20, length: 70, heartY: -35 },
-        { angle: 40, length: 80, heartY: -40 },
-        { angle: 60, length: 60, heartY: -30 }
+        // Bottom layer branches (level 1)
+        { angle: -75, length: 50, heartY: -15, level: 1 },
+        { angle: -65, length: 55, heartY: -12, level: 1 },
+        { angle: -55, length: 60, heartY: -10, level: 1 },
+        { angle: 55, length: 60, heartY: -10, level: 1 },
+        { angle: 65, length: 55, heartY: -12, level: 1 },
+        { angle: 75, length: 50, heartY: -15, level: 1 },
+        
+        // Level 2
+        { angle: -70, length: 65, heartY: -25, level: 2 },
+        { angle: -60, length: 70, heartY: -22, level: 2 },
+        { angle: -45, length: 75, heartY: -20, level: 2 },
+        { angle: -30, length: 80, heartY: -18, level: 2 },
+        { angle: 30, length: 80, heartY: -18, level: 2 },
+        { angle: 45, length: 75, heartY: -20, level: 2 },
+        { angle: 60, length: 70, heartY: -22, level: 2 },
+        { angle: 70, length: 65, heartY: -25, level: 2 },
+        
+        // Level 3
+        { angle: -65, length: 70, heartY: -40, level: 3 },
+        { angle: -50, length: 80, heartY: -38, level: 3 },
+        { angle: -35, length: 85, heartY: -35, level: 3 },
+        { angle: -20, length: 90, heartY: -32, level: 3 },
+        { angle: 0, length: 95, heartY: -30, level: 3 },
+        { angle: 20, length: 90, heartY: -32, level: 3 },
+        { angle: 35, length: 85, heartY: -35, level: 3 },
+        { angle: 50, length: 80, heartY: -38, level: 3 },
+        { angle: 65, length: 70, heartY: -40, level: 3 },
+        
+        // Level 4
+        { angle: -60, length: 75, heartY: -55, level: 4 },
+        { angle: -45, length: 85, heartY: -52, level: 4 },
+        { angle: -30, length: 90, heartY: -48, level: 4 },
+        { angle: -15, length: 95, heartY: -45, level: 4 },
+        { angle: 15, length: 95, heartY: -45, level: 4 },
+        { angle: 30, length: 90, heartY: -48, level: 4 },
+        { angle: 45, length: 85, heartY: -52, level: 4 },
+        { angle: 60, length: 75, heartY: -55, level: 4 },
+        
+        // Top layer branches (level 5)
+        { angle: -55, length: 80, heartY: -70, level: 5 },
+        { angle: -40, length: 90, heartY: -65, level: 5 },
+        { angle: -25, length: 95, heartY: -60, level: 5 },
+        { angle: -10, length: 100, heartY: -58, level: 5 },
+        { angle: 10, length: 100, heartY: -58, level: 5 },
+        { angle: 25, length: 95, heartY: -60, level: 5 },
+        { angle: 40, length: 90, heartY: -65, level: 5 },
+        { angle: 55, length: 80, heartY: -70, level: 5 },
     ];
 
     for (let i = 0; i < Math.min(count, branchData.length); i++) {
@@ -237,17 +280,30 @@ function drawBranches(baseX, topY, count) {
         // Draw branch
         ctx.beginPath();
         ctx.strokeStyle = '#5d3a1a';
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 3;
         ctx.moveTo(startX, startY);
         ctx.lineTo(endX, endY);
         ctx.stroke();
         
-        // Draw red heart at tip
-        drawRedHeart(endX, endY);
+        // Draw multiple red hearts along the branch
+        drawBranchHearts(startX, startY, endX, endY);
     }
 }
 
-function drawRedHeart(x, y) {
+function drawBranchHearts(startX, startY, endX, endY) {
+    // Draw 2-3 hearts along each branch
+    const heartPositions = [0.4, 0.7, 1.0];
+    
+    heartPositions.forEach((pos, index) => {
+        if (Math.random() > 0.3) { // 70% chance to draw each heart
+            const x = startX + (endX - startX) * pos;
+            const y = startY + (endY - startY) * pos;
+            drawRedHeart(x, y, 10 + Math.random() * 5);
+        }
+    });
+}
+
+function drawRedHeart(x, y, size) {
     ctx.save();
     ctx.translate(x, y);
     
@@ -256,7 +312,6 @@ function drawRedHeart(x, y) {
     ctx.shadowColor = '#ff4444';
     ctx.shadowBlur = 15;
     
-    const size = 12;
     ctx.moveTo(0, -size / 2);
     ctx.bezierCurveTo(size / 2, -size, size, -size / 3, 0, size / 2);
     ctx.bezierCurveTo(-size, -size / 3, -size / 2, -size, 0, -size / 2);
