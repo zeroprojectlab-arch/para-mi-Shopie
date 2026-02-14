@@ -70,7 +70,7 @@ function animateTrunk() {
 function animateBranches() {
     const duration = 4000;
     const startTime = Date.now();
-    const totalBranches = 45; 
+    const totalBranches = 80; // Más elementos para el relleno
     function animate() {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
@@ -94,9 +94,9 @@ function drawTrunk(x, baseY, height) {
     ctx.save();
     ctx.translate(x, baseY);
     ctx.beginPath();
-    ctx.fillStyle = '#4b2c20'; // Café madera
+    ctx.fillStyle = '#4b2c20';
     ctx.moveTo(-20, 0); 
-    ctx.lineTo(0, -height); // Puntiagudo arriba
+    ctx.lineTo(0, -height); 
     ctx.lineTo(20, 0); 
     ctx.fill();
     ctx.restore();
@@ -104,24 +104,32 @@ function drawTrunk(x, baseY, height) {
 
 function drawBranches(baseX, topY, count) {
     const branchData = [];
-    // Generamos ramas para formar un corazón
-    for(let i=0; i<45; i++) {
-        let t = (i / 44) * Math.PI * 2;
-        // Ecuación paramétrica del corazón ajustada para las puntas de las ramas
+    // Generamos puntos para el borde y el relleno del corazón
+    for(let i=0; i<80; i++) {
+        let t = Math.random() * Math.PI * 2;
+        let r = Math.sqrt(Math.random()); // Factor para rellenar el interior
+        
+        // Ecuación del corazón
         let x = 16 * Math.pow(Math.sin(t), 3);
         let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        branchData.push({ dx: x * 5, dy: y * 5 });
+        
+        // Multiplicamos por 'r' para que algunos queden adentro y otros afuera
+        branchData.push({ 
+            dx: x * 5 * r, 
+            dy: y * 5 * r, 
+            size: 5 + Math.random() * 10 // Tamaños variados como en la imagen
+        });
     }
 
     for (let i = 0; i < Math.min(count, branchData.length); i++) {
         const b = branchData[i];
         ctx.beginPath();
-        ctx.strokeStyle = '#4b2c20';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(75, 44, 32, 0.4)'; // Ramas más suaves para que luzcan los corazones
+        ctx.lineWidth = 1;
         ctx.moveTo(baseX, topY);
         ctx.lineTo(baseX + b.dx, topY + b.dy);
         ctx.stroke();
-        drawRedHeart(baseX + b.dx, topY + b.dy, 8);
+        drawRedHeart(baseX + b.dx, topY + b.dy, b.size);
     }
 }
 
@@ -131,7 +139,7 @@ function drawRedHeart(x, y, size) {
     ctx.beginPath();
     ctx.fillStyle = '#ff1a1a';
     ctx.shadowColor = '#ff4444';
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 8;
     ctx.moveTo(0, -size / 2);
     ctx.bezierCurveTo(size / 2, -size, size, -size / 3, 0, size / 2);
     ctx.bezierCurveTo(-size, -size / 3, -size / 2, -size, 0, -size / 2);
@@ -167,8 +175,10 @@ function drawGround() {
 function showFinalMessage() {
     canvas.style.transform = "translateX(120px)";
     setTimeout(() => {
-        if(textContainer) textContainer.classList.remove('hidden');
-        if(textContainer) textContainer.style.opacity = "1";
+        if(textContainer) {
+            textContainer.classList.remove('hidden');
+            textContainer.style.opacity = "1";
+        }
         startTimer();
     }, 1000);
 }
