@@ -25,7 +25,7 @@ function prepararArbol() {
         branchData.push({ dx: x * 6, dy: y * 6, size: 10, isBorder: true });
     }
     // Luego el relleno (puntos aleatorios ADENTRO de la forma)
-    for(let i=0; i<100; i++) {
+    for(let i=0; i<200; i++) {
         let t = Math.random() * Math.PI * 2;
         let r = Math.random() * 0.8; // Menor a 1 para que estén adentro
         let x = 16 * Math.pow(Math.sin(t), 3);
