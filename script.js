@@ -11,11 +11,17 @@ let heartScale = 1;
 let trunkHeight = 0;
 let branchesGrown = 0;
 let animationId = null;
+let branchCounter = 0;
 
 // Constants
 const GROUND_Y = 450;
 const HEART_START_Y = 200;
 const TARGET_HEART_Y = 420;
+
+// Heart shape parameters for branch direction
+const HEART_SCALE = 120;
+const HEART_CENTER_X = 300;
+const HEART_CENTER_Y = GROUND_Y - 180;
 
 // Initial render
 drawHeart(300, HEART_START_Y, 1, true);
@@ -62,7 +68,7 @@ function animateFalling() {
 function animateTrunk() {
     const duration = 2000;
     const startTime = Date.now();
-    const maxTrunkHeight = 180; // Taller trunk for more branches
+    const maxTrunkHeight = 180;
 
     function animate() {
         const elapsed = Date.now() - startTime;
@@ -90,21 +96,34 @@ function animateTrunk() {
 }
 
 function animateBranches() {
-    const duration = 4000; // Longer duration for more branches
+    const duration = 4000; // Faster for 50ms optimization
     const startTime = Date.now();
-    const totalBranches = 40; // Many more branches!
+    const totalBranches = 300; // More branches for lush tree
+    let lastDrawTime = 0;
 
-    function animate() {
+    function animate(currentTime) {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
         branchesGrown = Math.floor(progress * totalBranches);
 
-        // Draw scene
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawGround();
-        drawTrunk(300, GROUND_Y, trunkHeight);
-        drawBranches(300, GROUND_Y - trunkHeight, branchesGrown);
+        // Throttle rendering to every 50ms to avoid browser blocking
+        if (currentTime - lastDrawTime >= 50 || progress >= 1) {
+            lastDrawTime = currentTime;
+            
+            // Draw scene
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawGround();
+            drawTrunk(300, GROUND_Y, trunkHeight);
+            
+            // Draw heart-shaped branches
+            branchCounter = 0;
+            const baseX = 300;
+            const baseY = GROUND_Y - trunkHeight;
+            
+            // Draw multiple branches from the top of trunk, growing in heart shape
+            drawHeartBranches(baseX, baseY, branchesGrown);
+        }
 
         if (progress < 1) {
             animationId = requestAnimationFrame(animate);
@@ -114,7 +133,84 @@ function animateBranches() {
         }
     }
 
-    animate();
+    animationId = requestAnimationFrame(animate);
+}
+
+function drawHeartBranches(startX, startY, maxBranches) {
+    // Draw branches growing from trunk top toward heart shape
+    // Heart shape: angles spread wide on sides (-80 to +80), close at top
+    const initialAngles = [-80, -65, -50, -35, -20, -10, 0, 10, 20, 35, 50, 65, 80];
+    const branchesPerAngle = Math.floor(maxBranches / initialAngles.length);
+    
+    initialAngles.forEach((angle, index) => {
+        drawHeartBranch(startX, startY, 75, angle, 0, branchesPerAngle, index / initialAngles.length);
+    });
+}
+
+function drawHeartBranch(startX, startY, length, angle, depth, maxBranches, heartPosition) {
+    if (branchCounter >= maxBranches || length < 6) return;
+    
+    // Calculate end position
+    const angleRad = (angle * Math.PI) / 180;
+    const endX = startX + Math.cos(angleRad) * length;
+    const endY = startY + Math.sin(angleRad) * length;
+    
+    // Draw branch
+    ctx.beginPath();
+    ctx.strokeStyle = '#5d3a1a';
+    ctx.lineWidth = Math.max(1.5, 4 - depth * 0.5);
+    ctx.moveTo(startX, startY);
+    ctx.lineTo(endX, endY);
+    ctx.stroke();
+
+    branchCounter++;
+    
+    // Draw hearts along branch
+    drawHeartsAlongBranch(startX, startY, endX, endY, length);
+    
+    // Continue branching - SPLIT INTO 3 BRANCHES for lush tree
+    if (length > 10) {
+        const newLength = length * 0.7;
+        
+        // Determine if left, right, or center based on angle
+        const isLeftSide = angle < -15;
+        const isRightSide = angle > 15;
+        
+        if (isLeftSide) {
+            // Left side: curve more to the left
+            drawHeartBranch(endX, endY, newLength, angle - 40, depth + 1, maxBranches, heartPosition - 0.06);
+            drawHeartBranch(endX, endY, newLength * 0.85, angle - 25, depth + 1, maxBranches, heartPosition - 0.04);
+            drawHeartBranch(endX, endY, newLength * 0.7, angle - 10, depth + 1, maxBranches, heartPosition - 0.02);
+        } else if (isRightSide) {
+            // Right side: curve more to the right
+            drawHeartBranch(endX, endY, newLength, angle + 40, depth + 1, maxBranches, heartPosition + 0.06);
+            drawHeartBranch(endX, endY, newLength * 0.85, angle + 25, depth + 1, maxBranches, heartPosition + 0.04);
+            drawHeartBranch(endX, endY, newLength * 0.7, angle + 10, depth + 1, maxBranches, heartPosition + 0.02);
+        } else {
+            // Center branches (near top of heart): go up and outward
+            drawHeartBranch(endX, endY, newLength, angle - 25, depth + 1, maxBranches, heartPosition - 0.03);
+            drawHeartBranch(endX, endY, newLength, angle, depth + 1, maxBranches, heartPosition);
+            drawHeartBranch(endX, endY, newLength, angle + 25, depth + 1, maxBranches, heartPosition + 0.03);
+        }
+    }
+}
+
+function drawHeartsAlongBranch(startX, startY, endX, endY, length) {
+    // Draw hearts distributed along the branch
+    const heartCount = Math.floor(length / 20);
+    
+    for (let i = 1; i <= heartCount; i++) {
+        const pos = i / (heartCount + 1);
+        if (Math.random() > 0.15) { // 85% chance for more hearts
+            const x = startX + (endX - startX) * pos;
+            const y = startY + (endY - startY) * pos;
+            const size = 5 + Math.random() * 5;
+            drawRedHeart(x, y, size);
+        }
+    }
+    
+    // Always draw heart at tip
+    drawRedHeart(endX, endY, 7 + Math.random() * 4);
 }
 
 function showFinalMessage() {
@@ -198,7 +294,7 @@ function drawTrunk(x, baseY, height) {
     ctx.save();
     ctx.translate(x, baseY);
     
-    // Draw trunk (brown cone/triangle shape)
+    // Draw trunk (brown cone/triangle shape - pointed at top)
     ctx.beginPath();
     ctx.fillStyle = '#5d3a1a';
     ctx.moveTo(-25, 0); // Wide at bottom
@@ -213,94 +309,6 @@ function drawTrunk(x, baseY, height) {
     ctx.stroke();
     
     ctx.restore();
-}
-
-function drawBranches(baseX, topY, count) {
-    // Extended branch data with many more branches at different levels
-    const branchData = [
-        // Bottom layer branches (level 1)
-        { angle: -75, length: 50, heartY: -15, level: 1 },
-        { angle: -65, length: 55, heartY: -12, level: 1 },
-        { angle: -55, length: 60, heartY: -10, level: 1 },
-        { angle: 55, length: 60, heartY: -10, level: 1 },
-        { angle: 65, length: 55, heartY: -12, level: 1 },
-        { angle: 75, length: 50, heartY: -15, level: 1 },
-        
-        // Level 2
-        { angle: -70, length: 65, heartY: -25, level: 2 },
-        { angle: -60, length: 70, heartY: -22, level: 2 },
-        { angle: -45, length: 75, heartY: -20, level: 2 },
-        { angle: -30, length: 80, heartY: -18, level: 2 },
-        { angle: 30, length: 80, heartY: -18, level: 2 },
-        { angle: 45, length: 75, heartY: -20, level: 2 },
-        { angle: 60, length: 70, heartY: -22, level: 2 },
-        { angle: 70, length: 65, heartY: -25, level: 2 },
-        
-        // Level 3
-        { angle: -65, length: 70, heartY: -40, level: 3 },
-        { angle: -50, length: 80, heartY: -38, level: 3 },
-        { angle: -35, length: 85, heartY: -35, level: 3 },
-        { angle: -20, length: 90, heartY: -32, level: 3 },
-        { angle: 0, length: 95, heartY: -30, level: 3 },
-        { angle: 20, length: 90, heartY: -32, level: 3 },
-        { angle: 35, length: 85, heartY: -35, level: 3 },
-        { angle: 50, length: 80, heartY: -38, level: 3 },
-        { angle: 65, length: 70, heartY: -40, level: 3 },
-        
-        // Level 4
-        { angle: -60, length: 75, heartY: -55, level: 4 },
-        { angle: -45, length: 85, heartY: -52, level: 4 },
-        { angle: -30, length: 90, heartY: -48, level: 4 },
-        { angle: -15, length: 95, heartY: -45, level: 4 },
-        { angle: 15, length: 95, heartY: -45, level: 4 },
-        { angle: 30, length: 90, heartY: -48, level: 4 },
-        { angle: 45, length: 85, heartY: -52, level: 4 },
-        { angle: 60, length: 75, heartY: -55, level: 4 },
-        
-        // Top layer branches (level 5)
-        { angle: -55, length: 80, heartY: -70, level: 5 },
-        { angle: -40, length: 90, heartY: -65, level: 5 },
-        { angle: -25, length: 95, heartY: -60, level: 5 },
-        { angle: -10, length: 100, heartY: -58, level: 5 },
-        { angle: 10, length: 100, heartY: -58, level: 5 },
-        { angle: 25, length: 95, heartY: -60, level: 5 },
-        { angle: 40, length: 90, heartY: -65, level: 5 },
-        { angle: 55, length: 80, heartY: -70, level: 5 },
-    ];
-
-    for (let i = 0; i < Math.min(count, branchData.length); i++) {
-        const branch = branchData[i];
-        const angleRad = (branch.angle * Math.PI) / 180;
-        
-        const startX = baseX;
-        const startY = topY + branch.heartY;
-        const endX = startX + Math.cos(angleRad) * branch.length;
-        const endY = startY + Math.sin(angleRad) * branch.length;
-        
-        // Draw branch
-        ctx.beginPath();
-        ctx.strokeStyle = '#5d3a1a';
-        ctx.lineWidth = 3;
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-        
-        // Draw multiple red hearts along the branch
-        drawBranchHearts(startX, startY, endX, endY);
-    }
-}
-
-function drawBranchHearts(startX, startY, endX, endY) {
-    // Draw 2-3 hearts along each branch
-    const heartPositions = [0.4, 0.7, 1.0];
-    
-    heartPositions.forEach((pos, index) => {
-        if (Math.random() > 0.3) { // 70% chance to draw each heart
-            const x = startX + (endX - startX) * pos;
-            const y = startY + (endY - startY) * pos;
-            drawRedHeart(x, y, 10 + Math.random() * 5);
-        }
-    });
 }
 
 function drawRedHeart(x, y, size) {
